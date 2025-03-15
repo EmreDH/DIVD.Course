@@ -1,5 +1,7 @@
 using System;
+using System.Security.Claims;
 using BackEnd_Course;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,22 +23,20 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequestDTO request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
-        var user = new User
-        {
-            Name = "Jason",
-            Email = request.Email,
-            Role = "Admin",
-            PasswordHash = PasswordHasher.HashPassword("test123") 
-        };
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        if(user == null){
+            return Unauthorized(new {message = "Ongeldige email of wachtwoord"});
+        }
 
         if (!PasswordHasher.VerifyPassword(request.Password, user.PasswordHash))
         {
-            return Unauthorized(new { message = "Ongeldige login" });
+            return Unauthorized(new { message = "Ongeldige email of wachtwoord" });
         }
 
         var token = _jwtService.GenerateToken(user);
+
         return Ok(new { Token = token });
     }
 
@@ -65,6 +65,32 @@ public class AuthController : ControllerBase
         await _context.SaveChangesAsync();
     
     return Ok(new { message = "Registratie succesvol" });
+
+    }
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile(){
+
+        var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        if(String.IsNullOrEmpty(userEmail))
+        {
+            return Unauthorized(new { message = "Geen geldige token gevonden"});
+        }
+        
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+        if(user == null)
+        {
+            return NotFound (new { message = "Gebruiker niet gevonden"});
+        }
+
+        var UserDTO = new UserDto{
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role
+        };
+
+        return Ok(UserDTO);
 
     }
 }
