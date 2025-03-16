@@ -41,32 +41,36 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult>Register([FromBody]RegisterRequestDTO request){
-
-        if(String.IsNullOrWhiteSpace(request.Name) || String.IsNullOrWhiteSpace(request.Email) || String.IsNullOrWhiteSpace(request.Password))
-        {
-            return BadRequest(new{ message = "Alle velden zijn verplicht"});
-        }
-
-        if (await _context.Users.AnyAsync((u => u.Email == request.Email)))
-        {
-            return BadRequest(new { message = "Email bestaat al" });
-        }
-
-        var user = new User
-        {
-            Name = request.Name,
-            Email = request.Email,
-            Role = "Student",
-            PasswordHash = PasswordHasher.HashPassword(request.Password)
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-    
-    return Ok(new { message = "Registratie succesvol" });
-
+public async Task<IActionResult> Register([FromBody] RegisterRequestDTO request)
+{
+    if (string.IsNullOrWhiteSpace(request.Name) || 
+        string.IsNullOrWhiteSpace(request.Email) || 
+        string.IsNullOrWhiteSpace(request.Password))
+    {
+        return BadRequest(new { message = "Alle velden zijn verplicht" });
     }
+
+    if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+    {
+        return BadRequest(new { message = "Email bestaat al" });
+    }
+
+    var role = "Student"; 
+   
+    var user = new User
+    {
+        Name = request.Name,
+        Email = request.Email,
+        Role = role,
+        PasswordHash = PasswordHasher.HashPassword(request.Password)
+    };
+
+    _context.Users.Add(user);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Registratie succesvol" });
+}
+
 
     [Authorize]
     [HttpGet("profile")]
@@ -92,5 +96,35 @@ public class AuthController : ControllerBase
 
         return Ok(UserDTO);
 
+    }
+
+     [Authorize(Roles = "Admin")]
+    [HttpPost("create-admin")]
+    public async Task<IActionResult> CreateAdmin([FromBody] RegisterRequestDTO request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name) || 
+            string.IsNullOrWhiteSpace(request.Email) || 
+            string.IsNullOrWhiteSpace(request.Password))
+        {
+            return BadRequest(new { message = "Alle velden zijn verplicht" });
+        }
+
+        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+        {
+            return BadRequest(new { message = "Email bestaat al" });
+        }
+
+        var user = new User
+        {
+            Name = request.Name,
+            Email = request.Email,
+            Role = "Admin",
+            PasswordHash = PasswordHasher.HashPassword(request.Password)
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Admin succesvol aangemaakt" });
     }
 }
