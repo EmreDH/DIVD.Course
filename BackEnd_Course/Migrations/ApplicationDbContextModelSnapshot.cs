@@ -181,6 +181,12 @@ namespace BackEnd_Course.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpires")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -201,22 +207,37 @@ namespace BackEnd_Course.Migrations
                     b.Property<int>("AnswerID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AnswerID1")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
 
                     b.Property<int>("ResultID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ResultID1")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserID1")
                         .HasColumnType("int");
 
                     b.HasKey("UserAnswerID");
 
                     b.HasIndex("AnswerID");
 
+                    b.HasIndex("AnswerID1");
+
                     b.HasIndex("ResultID");
 
+                    b.HasIndex("ResultID1");
+
                     b.HasIndex("UserID");
+
+                    b.HasIndex("UserID1");
 
                     b.ToTable("UserAnswers");
                 });
@@ -276,22 +297,34 @@ namespace BackEnd_Course.Migrations
             modelBuilder.Entity("UserAnswer", b =>
                 {
                     b.HasOne("Answer", "Answer")
-                        .WithMany("UserAnswers")
+                        .WithMany()
                         .HasForeignKey("AnswerID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("Answer", null)
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("AnswerID1");
 
                     b.HasOne("Result", "Result")
-                        .WithMany("UserAnswers")
+                        .WithMany()
                         .HasForeignKey("ResultID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("User", "User")
+                    b.HasOne("Result", null)
                         .WithMany("UserAnswers")
+                        .HasForeignKey("ResultID1");
+
+                    b.HasOne("User", "User")
+                        .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("User", null)
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("UserID1");
 
                     b.Navigation("Answer");
 

@@ -14,9 +14,25 @@ namespace BackEnd_Course
         public DbSet<Result> Results { get; set; }
         public DbSet<UserAnswer> UserAnswers { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserAnswer>()
+            .HasOne(ua => ua.Result)
+            .WithMany()
+            .HasForeignKey(ua => ua.ResultID)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<UserAnswer>()
+            .HasOne(ua => ua.User)
+            .WithMany()
+            .HasForeignKey(ua => ua.UserID)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserAnswer>()
+            .HasOne(ua => ua.Answer)
+            .WithMany()
+            .HasForeignKey(ua => ua.AnswerID)
+            .OnDelete(DeleteBehavior.NoAction);
+    }
     }
 }
