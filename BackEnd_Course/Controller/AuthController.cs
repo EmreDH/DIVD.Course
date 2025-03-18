@@ -14,8 +14,8 @@ using MimeKit;
 public class AuthController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-
     private readonly JwtService _jwtService;
+    private readonly MailService _mailService;
 
 
     public AuthController(ApplicationDbContext context, JwtService jwtService, MailService mailService)
@@ -136,7 +136,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("request-password-reset")]
-    public async Task<IActionResult> RequestPasswordReset([FromBody] PasswordChangeDTO request)
+    public async Task<IActionResult> RequestPasswordReset([FromBody] PasswordResetRequestDTO request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -146,8 +146,11 @@ public class AuthController : ControllerBase
         }
 
         var token = GeneratePasswordResetToken(user);
-        var resetLink = $"https://divdmail.com/reset-password?token={token}";
-        _mailService.SendEmail(user.Email, "Wachtwoord Reset", $"Klik op deze link om je wachtwoord te resetten: {resetLink}");
+
+        var resetLink = $"http://localhost:5206/reset-password?token={token}";
+
+
+        _mailService.SendEmail(user.Email, "Wachtwoord reset aanvragen", $"Beste gebruiker, \n\n Je hebt een aanvraag gedaan om je wachtwoord te resetten.\n Klik op de onderstaande link om je wachtwoord te resetten:\n\n{resetLink}\n\n Als je dit niet hebt aangevraagd, kun je deze e-mail negeren. \n\n Met vriendelijke groet, \n Het Support Team");
 
         return Ok(new { message = "E-mail met reset link is verzonden" });
     }
@@ -156,5 +159,4 @@ public class AuthController : ControllerBase
     {
         return Guid.NewGuid().ToString();
     }
-    private readonly MailService _mailService; 
 }
