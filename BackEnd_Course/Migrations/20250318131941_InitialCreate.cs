@@ -33,9 +33,12 @@ namespace BackEnd_Course.Migrations
                     UserID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResetTokenExpires = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -144,7 +147,10 @@ namespace BackEnd_Course.Migrations
                     UserID = table.Column<int>(type: "int", nullable: false),
                     ResultID = table.Column<int>(type: "int", nullable: false),
                     AnswerID = table.Column<int>(type: "int", nullable: false),
-                    IsCorrect = table.Column<bool>(type: "bit", nullable: false)
+                    IsCorrect = table.Column<bool>(type: "bit", nullable: false),
+                    AnswerID1 = table.Column<int>(type: "int", nullable: true),
+                    ResultID1 = table.Column<int>(type: "int", nullable: true),
+                    UserID1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -153,20 +159,33 @@ namespace BackEnd_Course.Migrations
                         name: "FK_UserAnswers_Answers_AnswerID",
                         column: x => x.AnswerID,
                         principalTable: "Answers",
-                        principalColumn: "AnswerID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "AnswerID");
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Answers_AnswerID1",
+                        column: x => x.AnswerID1,
+                        principalTable: "Answers",
+                        principalColumn: "AnswerID");
                     table.ForeignKey(
                         name: "FK_UserAnswers_Results_ResultID",
                         column: x => x.ResultID,
                         principalTable: "Results",
-                        principalColumn: "ResultID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ResultID");
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Results_ResultID1",
+                        column: x => x.ResultID1,
+                        principalTable: "Results",
+                        principalColumn: "ResultID");
                     table.ForeignKey(
                         name: "FK_UserAnswers_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "UserID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Users_UserID1",
+                        column: x => x.UserID1,
+                        principalTable: "Users",
+                        principalColumn: "UserID");
                 });
 
             migrationBuilder.CreateIndex(
@@ -200,14 +219,29 @@ namespace BackEnd_Course.Migrations
                 column: "AnswerID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_AnswerID1",
+                table: "UserAnswers",
+                column: "AnswerID1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserAnswers_ResultID",
                 table: "UserAnswers",
                 column: "ResultID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_ResultID1",
+                table: "UserAnswers",
+                column: "ResultID1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserAnswers_UserID",
                 table: "UserAnswers",
                 column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_UserID1",
+                table: "UserAnswers",
+                column: "UserID1");
         }
 
         /// <inheritdoc />
