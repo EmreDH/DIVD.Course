@@ -159,4 +159,19 @@ public class AuthController : ControllerBase
     {
         return Guid.NewGuid().ToString();
     }
+
+    [HttpPost("send-verification-email")]
+    public async Task<IActionResult> SendVerificationEmail([FromBody] VerificationMailRequestDTO request)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (user == null)
+        {
+            return BadRequest(new { message = "E-mail niet gevonden" });
+        }
+
+        _mailService.SendEmail(user.Email, "Wachtwoord Bevestiging", "Je wachtwoord is succesvol gewijzigd. Je kunt nu inloggen met je nieuwe wachtwoord.");
+
+        return Ok(new { message = "Bevestigingsmail verzonden" });
+    }
 }
