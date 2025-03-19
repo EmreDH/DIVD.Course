@@ -1,13 +1,8 @@
-using System;
 using System.Security.Claims;
 using BackEnd_Course;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MailKit.Net.Smtp;
-using MimeKit;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 
 
 [ApiController]
@@ -18,14 +13,12 @@ public class AuthController : ControllerBase
     private readonly JwtService _jwtService;
     private readonly MailService _mailService;
 
-
     public AuthController(ApplicationDbContext context, JwtService jwtService, MailService mailService)
     {
         _context = context;
         _jwtService = jwtService;
         _mailService = mailService;
     }
-
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
@@ -76,7 +69,6 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Registratie succesvol" });
     }
-
 
     [Authorize]
     [HttpGet("profile")]
@@ -193,7 +185,6 @@ public class AuthController : ControllerBase
             return NotFound(new { message = "Gebruiker niet gevonden" });
         }
 
-
         if (!string.IsNullOrEmpty(request.Name))
         {
             user.Name = request.Name;
@@ -208,7 +199,6 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { message = "Dit e-mailadres is al in gebruik" });
         }
-
 
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
