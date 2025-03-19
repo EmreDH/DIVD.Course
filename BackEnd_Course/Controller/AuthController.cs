@@ -206,4 +206,21 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Profiel succesvol bijgewerkt" });
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("delete-user/{email}")]
+
+    public async Task<IActionResult> DeleteUser(String email)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if(user == null)
+        {
+            return NotFound(new {message = "Gebruiker niet gevonden"});
+        }
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new{message = "Gebruiker succesvol verwijderd"});
+    }
+    
 }
