@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MailKit.Net.Smtp;
 using MimeKit;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 
 [ApiController]
@@ -174,4 +175,45 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Bevestigingsmail verzonden" });
     }
+
+    [Authorize]
+    [HttpPut("update-profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDTO request)
+    {
+        var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return Unauthorized(new { message = "Geen geldige token gevonden" });
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+        if (user == null)
+        {
+            return NotFound(new { message = "Gebruiker niet gevonden" });
+        }
+
+
+        if (!string.IsNullOrEmpty(request.Name))
+        {
+            user.Name = request.Name;
+        }
+
+        if (!string.IsNullOrEmpty(request.Email))
+        {
+            user.Email = request.Email;
+        }
+
+        if (await _context.Users.AnyAsync(u => u.Email == request.Email && u.Email != user.Email))
+        {
+            return BadRequest(new { message = "Dit e-mailadres is al in gebruik" });
+        }
+
+
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Profiel succesvol bijgewerkt" });
+    }
+
 }
