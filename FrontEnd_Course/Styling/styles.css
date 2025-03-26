@@ -1,7 +1,6 @@
-/* Algemene navbar styling */
-.navbar {
-    background-color: black;
-    padding: 15px 40px; /* Verhoog de padding om ruimte te geven */
+  .navbar {
+    background-color: 	black;
+    padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -10,25 +9,23 @@
     left: 0;
     width: 100%;
     z-index: 1000;
-    box-sizing: border-box; /* Zorgt ervoor dat padding niet buiten het scherm valt */
+    box-sizing: border-box;
   }
   
   
-  /* Zorg ervoor dat de rest van de pagina niet achter de navbar zit */
   body {
-    padding-top: 60px; /* Voeg extra ruimte bovenaan toe zodat content niet onder de navbar zit */
+    padding-top: 60px;
   }
   
-  /* Logo styling */
-/* Logo styling */
-    .logo {
-    height: 40px; /* Pas de grootte aan naar wens */
+
+  .logo {
+    height: 40px;
     width: auto;
     display: block;
   }
   
   
-  /* Navigatie lijst */
+
   .nav-links {
     list-style: none;
     display: flex;
@@ -37,7 +34,7 @@
     padding: 0;
   }
   
-  /* Knoppen styling */
+
   .nav-item {
     color: white;
     border: 2px solid yellow;
@@ -47,7 +44,7 @@
     transition: all 0.3s ease-in-out;
   }
   
-  /* Hover-effect */
+
   .nav-item:hover {
     background-color: yellow;
     color: black;
