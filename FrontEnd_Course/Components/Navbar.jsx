@@ -1,17 +1,40 @@
-import React from "react";
-import logo from "/DIVD-Logo.png";
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import "../Styling/navbar.css"
 
-export default function Navbar() {
+const Navbar = () => {
+  const [activeItem, setActiveItem] = useState("home")
+
   return (
     <nav className="navbar">
-      <img src={logo} alt="DIVD Logo" className="logo" />
-
-
+      <img src="/DIVD-Logo.png" alt="DIVD Logo" className="logo" />
       <ul className="nav-links">
-        {["Home", "Course", "About us", "Contact", "Sign in"].map((item) => (
-          <li key={item} className="nav-item">{item}</li>
-        ))}
+        <li className={`nav-item ${activeItem === "home" ? "active" : ""}`}>
+          <Link to="/" onClick={() => setActiveItem("home")}>
+            Home
+          </Link>
+        </li>
+        <li className={`nav-item ${activeItem === "courses" ? "active" : ""}`}>
+          <Link to="/courses" onClick={() => setActiveItem("courses")}>
+            Courses
+          </Link>
+        </li>
+        <li className={`nav-item ${activeItem === "about" ? "active" : ""}`}>
+          <Link to="/about" onClick={() => setActiveItem("about")}>
+            About
+          </Link>
+        </li>
+        <li className={`nav-item ${activeItem === "contact" ? "active" : ""}`}>
+          <Link to="/contact" onClick={() => setActiveItem("contact")}>
+            Contact
+          </Link>
+        </li>
+        <li className="nav-item highlight">
+          <Link to="/login">Login</Link>
+        </li>
       </ul>
     </nav>
-  );
+  )
 }
+
+export default Navbar
