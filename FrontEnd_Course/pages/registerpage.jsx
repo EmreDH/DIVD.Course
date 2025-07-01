@@ -59,7 +59,8 @@ const RegisterPage = () => {
       })
 
       if (response.ok) {
-        window.location.href = "/login"
+        // Redirect correct via assign (testvriendelijker)
+        window.location.assign("/login")
       } else {
         const data = await response.json()
         setError(data.message || "Registration failed")
