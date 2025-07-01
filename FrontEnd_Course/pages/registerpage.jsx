@@ -31,7 +31,6 @@ const RegisterPage = () => {
     setIsLoading(true)
     setError("")
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match")
       setIsLoading(false)
@@ -45,15 +44,29 @@ const RegisterPage = () => {
     }
 
     try {
-      // Simulate registration request
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Registration attempted with:", formData)
+      const name = `${formData.firstName} ${formData.lastName}`.trim()
 
-      // Redirect after successful registration
-      // history.push('/login');
+      const response = await fetch("http://localhost:5206/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      if (response.ok) {
+        window.location.href = "/login"
+      } else {
+        const data = await response.json()
+        setError(data.message || "Registration failed")
+      }
     } catch (error) {
       setError("Registration failed. Please try again.")
-      console.error("Registration failed:", error)
+      console.error("Registration error:", error)
     } finally {
       setIsLoading(false)
     }
